@@ -15,7 +15,7 @@
       >
         <el-button size="mini" type="primary">选择文件</el-button>
         <div slot="tip" class="uploadTip">
-          最多同时上传5个文件,且每个文件不超过100M,我好帅
+          最多同时上传5个文件,且每个文件不超过100M
         </div>
       </el-upload>
       <el-button type="primary" size="mini" @click="upload">上传</el-button>
