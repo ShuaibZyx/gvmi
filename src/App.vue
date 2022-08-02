@@ -1,15 +1,15 @@
 <template>
   <div id="app">
-    <TestVue />
+    <Login />
   </div>
 </template>
 
 <script>
-import TestVue from "./components/Test.vue";
+import Login from "./components/Login.vue";
 export default {
   name: "app",
   components: {
-    TestVue,
+    Login,
   },
 };
 </script>
