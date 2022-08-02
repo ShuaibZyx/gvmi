@@ -10,8 +10,18 @@ body,
 
 /* 登录组件开始 */
 
+.cabbage {
+  bottom: 0;
+  right: 0;
+  width: 50px;
+  position: absolute;
+  border-radius: 5px;
+  margin: 10px;
+  overflow: hidden;
+}
+
 .login_container .el-tabs {
-  width: 70%;
+  width: 75%;
 }
 
 .login_container .el-tabs__nav-scroll {

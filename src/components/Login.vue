@@ -1,7 +1,7 @@
 <template>
   <div class="login_container">
     <div class="login_bg" />
-    <!--github-->
+    <!--github小猫咪-->
     <a
       href="https://github.com/ShuaibZyx/gvmi"
       class="github-corner"
@@ -38,12 +38,25 @@
       </svg>
     </a>
 
+    <!-- 图形验证码 -->
+    <Vcode
+      :show="isShowValid"
+      @success="success"
+      @close="close"
+      :successText="validSuccessText"
+    />
+
+    <!-- 登录注册表单盒子 -->
     <div class="login_box" ref="loginBoxRef">
+      <div class="cabbage">
+        <img src="../assets/imgs/cabbage.jpg" width="100%" />
+      </div>
       <div class="form">
         <div class="title">
-          <span>{{signName}}</span>
+          <span>{{ signName }}</span>
         </div>
         <el-tabs v-model="signName">
+          <!-- 登录 -->
           <el-tab-pane label="登录" name="Login">
             <el-form
               status-icon
@@ -92,14 +105,65 @@
               </el-form-item>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane label="注册" name="Regist">注册</el-tab-pane>
+          <!-- 注册 -->
+          <el-tab-pane label="注册" name="Regist">
+            <el-form
+              status-icon
+              :model="registerForm"
+              :rules="registerFormRules"
+              ref="registerFormRef"
+              :hide-required-asterisk="true"
+            >
+              <el-form-item prop="userNumb">
+                <el-input
+                  v-model="registerForm.userNumb"
+                  autocomplete="off"
+                  prefix-icon="el-icon-user"
+                  size="medium"
+                  clearable
+                  @focus.once="showClearBox"
+                  placeholder="请输入您的电话号码"
+                />
+              </el-form-item>
+
+              <el-form-item prop="userPwd">
+                <el-input
+                  v-model="registerForm.userPwd"
+                  type="password"
+                  prefix-icon="el-icon-lock"
+                  autocomplete="off"
+                  clearable
+                  validate-event
+                  size="medium"
+                  placeholder="请输入您的密码"
+                  :show-password="true"
+                  @focus.once="showClearBox"
+                />
+              </el-form-item>
+
+              <el-form-item>
+                <div class="login-btn">
+                  <el-button
+                    type="primary"
+                    size="medium"
+                    round
+                    icon="el-icon-check"
+                    style="width: 95%"
+                    plain
+                    @click="isShowValid = true"
+                    >注册</el-button
+                  >
+                </div>
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
         </el-tabs>
       </div>
       <div class="btns">
         <el-link @click="signName = 'Regist'">还未注册?</el-link>
         <span>/</span>
         <el-link style="margin-right: 10%">忘记密码?</el-link>
-        <el-checkbox>7天免登录</el-checkbox>
+        <el-checkbox v-model="autoLogin">7天免登录</el-checkbox>
       </div>
       <div class="context">
         <div class="logoImg">
@@ -115,14 +179,20 @@
 </template>
 
 <script>
+import Vcode from "vue-puzzle-vcode";
 export default {
   name: "Login",
+  components: {
+    Vcode,
+  },
   data() {
     return {
+      //登录表单
       loginForm: {
         userNumb: "",
         userPwd: "",
       },
+      //登陆验证规则
       loginFormRules: {
         // 验证用户名是否合法
         userNumb: [
@@ -144,10 +214,54 @@ export default {
           },
         ],
       },
+      //注册所用form表单
+      registerForm: {
+        userNumb: "",
+        userPwd: "",
+      },
+      //注册时所用的验证规则
+      registerFormRules: {
+        userNumb: [
+          { required: true, message: "请输入电话号码", trigger: "blur" },
+          {
+            pattern: /^((1[3,5,8][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/,
+            message: "手机号码格式不符合",
+            trigger: "blur",
+          },
+        ],
+        userPwd: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          {
+            min: 6,
+            max: 13,
+            message: "长度在 6 到 13 个字符",
+            trigger: "blur",
+          },
+        ],
+      },
+      //标签名
       signName: "Login",
+      //7天免登录
+      autoLogin: true,
+      // 图形验证码模态框是否出现
+      isShowValid: false,
+      //滑块验证成功时显示的文字
+      validSuccessText: "你太棒了",
     };
   },
   methods: {
+    // 用户验证码通过了验证
+    success(time) {
+      this.validSuccessText = `只用了${parseInt(time)}秒 你太快了`;
+      // 通过验证后，需要手动隐藏模态框
+      this.isShowValid = false;
+    },
+
+    // 用户点击遮罩层，应该关闭模态框
+    close() {
+      this.isShowValid = false;
+    },
+
     //点击登陆页面的box时将透明度复原
     showClearBox() {
       this.$refs.loginBoxRef.style.opacity = 0.8;
