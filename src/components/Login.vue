@@ -65,20 +65,22 @@
               ref="loginFormRef"
               :hide-required-asterisk="true"
             >
-              <el-form-item prop="userNumb">
+              <el-form-item prop="account">
                 <el-input
-                  v-model="loginForm.userNumb"
+                  v-model="loginForm.account"
                   autocomplete="off"
                   prefix-icon="el-icon-user"
                   size="medium"
                   clearable
                   @focus.once="showClearBox"
                   placeholder="请输入您的电话号码"
+                  :maxlength="11"
+                  @keyup.enter.native="loginByPassword"
                 />
               </el-form-item>
-              <el-form-item prop="userPwd">
+              <el-form-item prop="password">
                 <el-input
-                  v-model="loginForm.userPwd"
+                  v-model="loginForm.password"
                   type="password"
                   prefix-icon="el-icon-lock"
                   autocomplete="off"
@@ -86,8 +88,10 @@
                   validate-event
                   size="medium"
                   placeholder="请输入您的密码"
+                  :maxlength="15"
                   :show-password="true"
                   @focus.once="showClearBox"
+                  @keyup.enter.native="loginByPassword"
                 />
               </el-form-item>
               <el-form-item>
@@ -99,6 +103,7 @@
                     plain
                     icon="el-icon-check"
                     style="width: 95%"
+                    @click="loginByPassword"
                     >登录</el-button
                   >
                 </div>
@@ -111,24 +116,26 @@
               status-icon
               :model="registerForm"
               :rules="registerFormRules"
-              ref="registerFormRef"
+              ref="registFormRef"
               :hide-required-asterisk="true"
             >
-              <el-form-item prop="userNumb">
+              <el-form-item prop="account">
                 <el-input
-                  v-model="registerForm.userNumb"
+                  v-model="registerForm.account"
                   autocomplete="off"
                   prefix-icon="el-icon-user"
                   size="medium"
                   clearable
+                  :maxlength="11"
                   @focus.once="showClearBox"
+                  @keyup.enter.native="isShowValid = true"
                   placeholder="请输入您的电话号码"
                 />
               </el-form-item>
 
-              <el-form-item prop="userPwd">
+              <el-form-item prop="password">
                 <el-input
-                  v-model="registerForm.userPwd"
+                  v-model="registerForm.password"
                   type="password"
                   prefix-icon="el-icon-lock"
                   autocomplete="off"
@@ -136,7 +143,9 @@
                   validate-event
                   size="medium"
                   placeholder="请输入您的密码"
+                  :maxlength="15"
                   :show-password="true"
+                  @keyup.enter.native="isShowValid = true"
                   @focus.once="showClearBox"
                 />
               </el-form-item>
@@ -159,7 +168,7 @@
           </el-tab-pane>
         </el-tabs>
       </div>
-      <div class="btns">
+      <div class="btns" v-if="signName === 'Login'">
         <el-link @click="signName = 'Regist'">还未注册?</el-link>
         <span>/</span>
         <el-link style="margin-right: 10%">忘记密码?</el-link>
@@ -189,13 +198,13 @@ export default {
     return {
       //登录表单
       loginForm: {
-        userNumb: "",
-        userPwd: "",
+        account: "",
+        password: "",
       },
       //登陆验证规则
       loginFormRules: {
         // 验证用户名是否合法
-        userNumb: [
+        account: [
           { required: true, message: "请输入手机号码", trigger: "blur" },
           {
             pattern: /^((1[3,5,8][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/,
@@ -204,24 +213,24 @@ export default {
           },
         ],
         //验证密码是否合法
-        userPwd: [
+        password: [
           { required: true, message: "请输入登录密码", trigger: "blur" },
           {
-            min: 6,
-            max: 13,
-            message: "长度在 6 到 13 个字符",
+            min: 9,
+            max: 15,
+            message: "长度在 9 到 15 个字符",
             trigger: "blur",
           },
         ],
       },
       //注册所用form表单
       registerForm: {
-        userNumb: "",
-        userPwd: "",
+        account: "",
+        password: "",
       },
       //注册时所用的验证规则
       registerFormRules: {
-        userNumb: [
+        account: [
           { required: true, message: "请输入电话号码", trigger: "blur" },
           {
             pattern: /^((1[3,5,8][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/,
@@ -229,12 +238,12 @@ export default {
             trigger: "blur",
           },
         ],
-        userPwd: [
+        password: [
           { required: true, message: "请输入密码", trigger: "blur" },
           {
-            min: 6,
-            max: 13,
-            message: "长度在 6 到 13 个字符",
+            min: 9,
+            max: 15,
+            message: "长度在 9 到 15 个字符",
             trigger: "blur",
           },
         ],
@@ -250,9 +259,49 @@ export default {
     };
   },
   methods: {
+    //登录所用方法
+    loginByPassword() {
+      //首先进行数据预验证
+      this.$refs.loginFormRef.validate(async (valid) => {
+        //验证不通过直接返回
+        if (!valid) return;
+        //登录权限有效时间
+        var expiresIn = this.autoLogin ? 7 * 24 * 60 * 60 : 4 * 60 * 60;
+        const { data: loginRes } = await this.$http.post("user/login", {
+          ...this.loginForm,
+          expiresIn,
+        });
+        const token = loginRes.data
+        if (this.autoLogin) this.$cookies.set("token", token, "7d")
+        window.sessionStorage.setItem("token", JSON.stringify(token));
+        this.$message({
+          message: loginRes.msg,
+          center: true,
+          type: "success",
+        });
+      });
+    },
+
+    regist() {
+      //首先进行数据预验证
+      this.$refs.registFormRef.validate(async (valid) => {
+        //验证不通过直接返回
+        if (!valid) return;
+        const { data: registRes } = await this.$http.post("user/regist", {
+          ...this.registerForm,
+        });
+        this.$message({
+          message: registRes.msg,
+          type: "success",
+          center: true,
+        });
+      });
+    },
+
     // 用户验证码通过了验证
     success(time) {
       this.validSuccessText = `只用了${parseInt(time)}秒 你太快了`;
+      this.regist();
       // 通过验证后，需要手动隐藏模态框
       this.isShowValid = false;
     },
@@ -264,10 +313,9 @@ export default {
 
     //点击登陆页面的box时将透明度复原
     showClearBox() {
-      this.$refs.loginBoxRef.style.opacity = 0.8;
+      this.$refs.loginBoxRef.style.opacity = 0.95;
     },
   },
   mounted() {},
 };
 </script>
-
