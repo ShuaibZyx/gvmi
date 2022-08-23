@@ -189,6 +189,8 @@
 
 <script>
 import Vcode from "vue-puzzle-vcode";
+import CryptoJS from "../assets/js/crypto";
+import { Base64 } from "js-base64";
 export default {
   name: "Login",
   components: {
@@ -267,29 +269,68 @@ export default {
         if (!valid) return;
         //登录权限有效时间
         var expiresIn = this.autoLogin ? 7 * 24 * 60 * 60 : 4 * 60 * 60;
+        //对密码进行加密
+        const password = Base64.encode(
+          CryptoJS.encrypt(this.loginForm.password)
+        );
+        //发起登录请求
         const { data: loginRes } = await this.$http.post("user/login", {
-          ...this.loginForm,
+          account: this.loginForm.account,
+          password,
           expiresIn,
         });
-        const token = loginRes.data
-        if (this.autoLogin) this.$cookies.set("token", token, "7d")
+        //将返回的token存入session以及cookie
+        const token = loginRes.data;
+        if (this.autoLogin) this.$cookies.set("token", token, "7d");
         window.sessionStorage.setItem("token", JSON.stringify(token));
+        if (loginRes.code === 200) {
+          //获取登录的用户的Id
+          const { data: userIdRes } = await this.$http.get("user/userId");
+          //将id存入vuex并跳转路由
+          window.sessionStorage.setItem("userId", userIdRes.data);
+          this.$router.push("home");
+          //提示用户登录状态
+          this.$message({
+            message: "登录成功",
+            center: true,
+            type: "success",
+          });
+          return;
+        }
         this.$message({
           message: loginRes.msg,
           center: true,
-          type: "success",
+          type: "warning",
         });
       });
     },
 
+    //注册功能
     regist() {
       //首先进行数据预验证
       this.$refs.registFormRef.validate(async (valid) => {
         //验证不通过直接返回
         if (!valid) return;
+        //对用户密码进行加密
+        const password = Base64.encode(
+          CryptoJS.encrypt(this.registerForm.password)
+        );
+        //发起请求
         const { data: registRes } = await this.$http.post("user/regist", {
-          ...this.registerForm,
+          account: this.registerForm.account,
+          password,
         });
+        if (registRes.code === 200) {
+          //注册成功后为用户填入登陆表单数据
+          this.loginForm = this.registerForm;
+          this.signName = "Regist";
+          this.$message({
+            message: "注册成功 请登录",
+            type: "success",
+            center: true,
+          });
+          return;
+        }
         this.$message({
           message: registRes.msg,
           type: "success",

@@ -2,8 +2,10 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
-const Home = () => import("../components/Home.vue");
+const Layout = () => import("../components/Layout.vue");
 const Login = () => import("../components/Login.vue");
+const Home = () => import("../views/Home.vue");
+const Forum = () => import("../views/Forum.vue");
 
 const originalPush = VueRouter.prototype.push;
 
@@ -13,16 +15,25 @@ VueRouter.prototype.push = function push(location) {
 
 const router = new VueRouter({
   routes: [
-    { path: "/", redirect: "/home" },
+    { path: "/", redirect: "/layout" },
     { path: "/login", component: Login },
     {
-      path: "/home",
-      component: Home,
-      children: [],
+      path: "/layout",
+      component: Layout,
+      redirect: "/home",
+      children: [
+        {
+          path: "/home",
+          component: Home,
+        },
+        {
+          path: "/forum",
+          component: Forum,
+        },
+      ],
     },
   ],
 });
-
 
 // 挂载路由前置守卫
 router.beforeEach((to, from, next) => {

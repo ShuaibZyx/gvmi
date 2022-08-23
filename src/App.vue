@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <router-view></router-view>
-    <el-backtop></el-backtop>
+    <router-view/>
+    <el-backtop/>
   </div>
 </template>
 
@@ -34,11 +34,14 @@ export default {
     window.addEventListener("unload", () => {
       this.unloadTime = new Date().getTime();
       const diffTime = this.unloadTime - this.beforeUnloadTime;
+      const token = window.sessionStorage.getItem("token")
+      const userId = window.sessionStorage.getItem("userId")
       //一般情况下，刷新页面diffTime > 10ms,而关闭页面 diffTime < 3ms
       //window.navigator.sendBeacon发送的请求为异步post请求
-      if (diffTime <= 5) {
+      //关闭页面且用户是登陆状态则发送下线请求
+      if (diffTime <= 5 && token && userId) {
         var formdata = new FormData();
-        formdata.append("userId", "a8c7c4e4-f389-4aab-9fb4-de1f310003e0");
+        formdata.append("userId", userId);
         window.navigator.sendBeacon(this.offlineUrl, formdata);
       }
     });

@@ -1,13 +1,17 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from "vue";
+import Vuex from "vuex";
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {
-  },
+  actions: {},
   mutations: {
+    //设置用户个人信息
+    SetUserInfo(state, value) {
+      state.userInfo = value;
+    },
   },
-  actions: {
+  state: {
+    userInfo: {},
   },
-})
+});

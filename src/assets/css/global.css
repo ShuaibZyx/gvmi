@@ -156,19 +156,24 @@ body,
 .github-corner :hover .octo-arm {
   animation: octocat-wave 560ms ease-in-out;
 }
+
 @media (max-width: 991px) {
-  .github-corner > svg {
+  .github-corner>svg {
     fill: #fff !important;
     color: #008000 !important;
   }
+
   .github-corner .github-corner:hover .octo-arm {
     animation: none;
   }
+
   .github-corner .github-corner .octo-arm {
     animation: octocat-wave 560ms ease-in-out;
   }
 }
+
 @-moz-keyframes octocat-wave {
+
   0%,
   100% {
     -webkit-transform: rotate(0);
@@ -177,6 +182,7 @@ body,
     -o-transform: rotate(0);
     transform: rotate(0);
   }
+
   20%,
   60% {
     -webkit-transform: rotate(-25deg);
@@ -185,6 +191,7 @@ body,
     -o-transform: rotate(-25deg);
     transform: rotate(-25deg);
   }
+
   40%,
   80% {
     -webkit-transform: rotate(10deg);
@@ -194,7 +201,9 @@ body,
     transform: rotate(10deg);
   }
 }
+
 @-webkit-keyframes octocat-wave {
+
   0%,
   100% {
     -webkit-transform: rotate(0);
@@ -203,6 +212,7 @@ body,
     -o-transform: rotate(0);
     transform: rotate(0);
   }
+
   20%,
   60% {
     -webkit-transform: rotate(-25deg);
@@ -211,6 +221,7 @@ body,
     -o-transform: rotate(-25deg);
     transform: rotate(-25deg);
   }
+
   40%,
   80% {
     -webkit-transform: rotate(10deg);
@@ -220,7 +231,9 @@ body,
     transform: rotate(10deg);
   }
 }
+
 @-o-keyframes octocat-wave {
+
   0%,
   100% {
     -webkit-transform: rotate(0);
@@ -229,6 +242,7 @@ body,
     -o-transform: rotate(0);
     transform: rotate(0);
   }
+
   20%,
   60% {
     -webkit-transform: rotate(-25deg);
@@ -237,6 +251,7 @@ body,
     -o-transform: rotate(-25deg);
     transform: rotate(-25deg);
   }
+
   40%,
   80% {
     -webkit-transform: rotate(10deg);
@@ -246,7 +261,9 @@ body,
     transform: rotate(10deg);
   }
 }
+
 @keyframes octocat-wave {
+
   0%,
   100% {
     -webkit-transform: rotate(0);
@@ -255,6 +272,7 @@ body,
     -o-transform: rotate(0);
     transform: rotate(0);
   }
+
   20%,
   60% {
     -webkit-transform: rotate(-25deg);
@@ -263,6 +281,7 @@ body,
     -o-transform: rotate(-25deg);
     transform: rotate(-25deg);
   }
+
   40%,
   80% {
     -webkit-transform: rotate(10deg);
@@ -274,3 +293,153 @@ body,
 }
 
 /* 登录组件结束 */
+
+/* 头部组件开始*/
+.el-header {
+  padding: 0;
+  height: 80px !important;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
+    Microsoft YaHei, SimSun, sans-serif;
+}
+
+.el-card__body {
+  height: 100%;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.el-card {
+  height: 100%;
+}
+
+.header {
+  width: 90%;
+  height: 100%;
+  border-bottom: 2px #c6c3c3 solid;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.header .logo {
+  width: 20%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.header .logo .el-link {
+  font-size: 2em !important;
+  user-select: none;
+}
+
+.header .right {
+  width: 80%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header .right .el-divider--vertical {
+  width: 5%;
+  width: 2px;
+  height: 1.5em;
+}
+
+.header .right .menu {
+  width: 75%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.el-menu {
+  height: 100%;
+}
+
+.header .el-menu-item {
+  display: flex;
+  align-items: center;
+  font-size: 1.2em;
+  height: 100% !important;
+  user-select: none;
+}
+
+.header .right .user {
+  width: 20%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.2em;
+}
+
+.header .right .user .coin {
+  color: gold;
+  cursor: pointer;
+}
+
+.header .right .user .nickname {
+  color: #409eff;
+  cursor: pointer;
+}
+
+/* 头部组件结束 */
+
+/* 底部组件开始 */
+.el-footer {
+  padding: 0;
+  height: 160px !important;
+}
+
+.footer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 5px;
+  overflow: hidden;
+  background-color: dimgray;
+}
+
+.footer .links {
+  width: 50%;
+  height: 100%;
+  background-color: dimgray;
+}
+
+.footer .declare {
+  width: 50%;
+  height: 100%;
+  background-color: dimgray;
+}
+
+.footer .el-divider--vertical {
+  width: 2px;
+  height: 7em;
+}
+
+/* 底部组件开始 */
+
+
+/* 网站主页开始 */
+.el-main {
+  padding: 0;
+  height: auto;
+}
+
+.el-carousel__container {
+  height: 40em;
+}
+/* 网站主页结束 */
