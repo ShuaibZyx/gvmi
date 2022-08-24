@@ -6,6 +6,7 @@ const Layout = () => import("../components/Layout.vue");
 const Login = () => import("../components/Login.vue");
 const Home = () => import("../views/Home.vue");
 const Forum = () => import("../views/Forum.vue");
+const Carton = () => import("../views/Carton.vue");
 
 const originalPush = VueRouter.prototype.push;
 
@@ -29,6 +30,10 @@ const router = new VueRouter({
         {
           path: "/forum",
           component: Forum,
+        },
+        {
+          path: "/carton",
+          component: Carton,
         },
       ],
     },

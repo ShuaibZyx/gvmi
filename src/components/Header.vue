@@ -13,7 +13,7 @@
             <el-menu-item index="2">资源共享</el-menu-item>
             <el-menu-item index="3">消息中心</el-menu-item>
             <el-menu-item index="4">我的收藏</el-menu-item>
-            <el-menu-item index="5">文件仓库</el-menu-item>
+            <el-menu-item index="carton">文件仓库</el-menu-item>
           </el-menu>
         </div>
         <el-divider direction="vertical" />
