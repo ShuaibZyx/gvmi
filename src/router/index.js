@@ -7,6 +7,8 @@ const Login = () => import("../components/Login.vue");
 const Home = () => import("../views/Home.vue");
 const Forum = () => import("../views/Forum.vue");
 const Carton = () => import("../views/Carton.vue");
+const BoxContent = () => import("../views/BoxContent.vue");
+const Test = () => import("../components/Test.vue");
 
 const originalPush = VueRouter.prototype.push;
 
@@ -34,6 +36,14 @@ const router = new VueRouter({
         {
           path: "/carton",
           component: Carton,
+        },
+        {
+          path: "/boxcontent",
+          component: BoxContent,
+        },
+        {
+          path: "/test",
+          component: Test,
         },
       ],
     },

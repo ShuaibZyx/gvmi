@@ -42,15 +42,15 @@ export default {
       const { data: userInfoResult } = await this.$http.post("user/userInfo", {
         userId,
       });
-      if (userInfoResult.code === 200) {
-        this.$store.commit("SetUserInfo", userInfoResult.data[0]);
+      if (userInfoResult.code !== 200) {
+        this.$message({
+          message: "获取用户个人信息失败",
+          type: "warning",
+          center: true,
+        });
         return;
       }
-      this.$message({
-        message: "获取用户个人信息失败",
-        type: "warning",
-        center: true,
-      });
+      this.$store.commit("SetUserInfo", userInfoResult.data[0]);
     },
   },
   mounted() {

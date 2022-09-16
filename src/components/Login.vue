@@ -286,7 +286,7 @@ export default {
         if (loginRes.code === 200) {
           //获取登录的用户的Id
           const { data: userIdRes } = await this.$http.get("user/userId");
-          //将id存入vuex并跳转路由
+          //将id存入session并跳转路由
           window.sessionStorage.setItem("userId", userIdRes.data);
           this.$router.push("home");
           //提示用户登录状态
@@ -320,6 +320,7 @@ export default {
           account: this.registerForm.account,
           password,
         });
+        //注册成功
         if (registRes.code === 200) {
           //注册成功后为用户填入登陆表单数据
           this.loginForm = this.registerForm;
@@ -331,6 +332,7 @@ export default {
           });
           return;
         }
+        //注册失败
         this.$message({
           message: registRes.msg,
           type: "success",

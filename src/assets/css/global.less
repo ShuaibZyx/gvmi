@@ -7,7 +7,6 @@ body,
   padding: 0;
 }
 
-
 /* 登录组件开始 */
 
 .cabbage {
@@ -62,7 +61,18 @@ body,
   height: auto;
   font-size: 2.7em;
   line-height: 2.5em;
-  background-image: linear-gradient(to left, #5d5d5d 0%, #9D9EA3 100%), radial-gradient(88% 271%, rgba(255, 255, 255, 0.25) 0%, rgba(254, 254, 254, 0.25) 1%, rgba(0, 0, 0, 0.25) 100%), radial-gradient(50% 100%, rgba(255, 255, 255, 0.30) 0%, rgba(0, 0, 0, 0.30) 100%);
+  background-image: linear-gradient(to left, #5d5d5d 0%, #9d9ea3 100%),
+    radial-gradient(
+      88% 271%,
+      rgba(255, 255, 255, 0.25) 0%,
+      rgba(254, 254, 254, 0.25) 1%,
+      rgba(0, 0, 0, 0.25) 100%
+    ),
+    radial-gradient(
+      50% 100%,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
   background-blend-mode: normal, lighten, soft-light;
   background-clip: text;
   color: transparent;
@@ -148,7 +158,7 @@ body,
 }
 
 @media (max-width: 991px) {
-  .github-corner>svg {
+  .github-corner > svg {
     fill: #fff !important;
     color: #008000 !important;
   }
@@ -163,7 +173,6 @@ body,
 }
 
 @-moz-keyframes octocat-wave {
-
   0%,
   100% {
     -webkit-transform: rotate(0);
@@ -193,7 +202,6 @@ body,
 }
 
 @-webkit-keyframes octocat-wave {
-
   0%,
   100% {
     -webkit-transform: rotate(0);
@@ -223,7 +231,6 @@ body,
 }
 
 @-o-keyframes octocat-wave {
-
   0%,
   100% {
     -webkit-transform: rotate(0);
@@ -253,7 +260,6 @@ body,
 }
 
 @keyframes octocat-wave {
-
   0%,
   100% {
     -webkit-transform: rotate(0);
@@ -313,74 +319,84 @@ body,
   flex-direction: row;
   justify-content: center;
   align-items: center;
-}
-
-.header .logo {
-  width: 20%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.header .logo .el-link {
-  font-size: 2em !important;
-  user-select: none;
-}
-
-.header .right {
-  width: 80%;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header .right .el-divider--vertical {
-  width: 5%;
-  width: 2px;
-  height: 1.5em;
-}
-
-.header .right .menu {
-  width: 75%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.el-menu {
-  height: 100%;
-}
-
-.header .el-menu-item {
-  display: flex;
-  align-items: center;
-  font-size: 1.2em;
-  height: 100% !important;
-  user-select: none;
-}
-
-.header .right .user {
-  width: 20%;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 1.2em;
-}
-
-.header .right .user .coin {
-  color: gold;
-  cursor: pointer;
-}
-
-.header .right .user .nickname {
-  color: #409eff;
-  cursor: pointer;
+  .logo {
+    width: 20%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .el-link {
+      font-size: 2em !important;
+      user-select: none;
+    }
+    .guide {
+      width: 30%;
+    }
+  }
+  .right {
+    width: 80%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    .el-divider--vertical {
+      width: 5%;
+      width: 2px;
+      height: 1.5em;
+    }
+    .menu {
+      width: 75%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .vertical {
+      width: 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .home {
+        cursor: pointer;
+        font-size: 1.3em;
+        color: #409eff;
+      }
+    }
+    .user {
+      width: 17%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 1.2em;
+      .coin {
+        color: gold;
+        cursor: pointer;
+      }
+      .el-dropdown-link {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.3em;
+        .nickname {
+          color: #409eff;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+  .el-menu {
+    height: 100%;
+  }
+  .el-menu-item {
+    display: flex;
+    align-items: center;
+    font-size: 1.2em;
+    height: 100% !important;
+    user-select: none;
+  }
 }
 
 /* 头部组件结束 */
@@ -391,37 +407,7 @@ body,
   height: 160px !important;
 }
 
-.footer {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-  border-radius: 5px;
-  overflow: hidden;
-  background-color: dimgray;
-}
-
-.footer .links {
-  width: 50%;
-  height: 100%;
-  background-color: dimgray;
-}
-
-.footer .declare {
-  width: 50%;
-  height: 100%;
-  background-color: dimgray;
-}
-
-.footer .el-divider--vertical {
-  width: 2px;
-  height: 7em;
-}
-
-/* 底部组件开始 */
-
+/* 底部组件结束 */
 
 /* 网站主页开始 */
 .el-main {

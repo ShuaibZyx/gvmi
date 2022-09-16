@@ -3,11 +3,10 @@
     <div class="forum">
       <el-menu :collapse="true" :collapse-transition="false">
         <el-menu-item
-          v-for="item in categorys"
-          :key="item.categoryId"
-          :index="item.categoryId.toString()"
+          v-for="(item, index) in categorys"
+          :key="index"
         >
-          {{ item.name }}
+          {{ item }}
         </el-menu-item>
       </el-menu>
 
@@ -81,32 +80,16 @@ export default {
   name: "Forum",
   data() {
     return {
-      categorys: [],
+      categorys: ["生活日常", "码农专区", "游戏分享", "奇妙技术"],
       count: 0,
     };
   },
   methods: {
-    async getArticleCategory() {
-      const { data: getArticleCaregorysRes } = await this.$http.get(
-        "article/categorys"
-      );
-      if (getArticleCaregorysRes.code !== 200) {
-        this.$message({
-          message: `${getArticleCaregorysRes.msg}`,
-          type: "error",
-          center: true,
-        });
-        return;
-      }
-      this.categorys = getArticleCaregorysRes.data;
-    },
     load() {
       this.count += 2;
     },
   },
-  mounted() {
-    this.getArticleCategory();
-  },
+  mounted() {},
 };
 </script>
 

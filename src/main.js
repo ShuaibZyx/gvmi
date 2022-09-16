@@ -3,15 +3,22 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import "./plugins/element.js";
-import "./assets/css/global.css";
+import "./assets/css/global.less";
 import axios from "axios";
 import moment from "moment";
 import Nprogress from "nprogress";
 import "nprogress/nprogress.css";
 import VueCookies from "vue-cookies";
 import { v4 as uuid } from "uuid";
+import methods from "./assets/js/methods";
+import VideoPlayer from "vue-video-player";
 
+require("video.js/dist/video-js.css");
+require("vue-video-player/src/custom-theme.css");
+
+Vue.use(VideoPlayer);
 Vue.use(VueCookies);
+Vue.mixin(methods);
 
 //设置避免生产环境错误提示
 Vue.config.productionTip = false;
@@ -56,6 +63,20 @@ axios.interceptors.response.use(
     return Promise.error(error);
   }
 );
+
+//全局过滤器---时间格式转换
+Vue.filter("dateFormat", function (time) {
+  return moment(time).format("YYYY-MM-DD");
+});
+
+//全局过滤器---字节单位转换
+Vue.filter("bytesToSize", function (bytes) {
+  if (bytes === 0) return "0 B";
+  var k = 1000,
+    sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"],
+    i = Math.floor(Math.log(bytes) / Math.log(k));
+  return (bytes / Math.pow(k, i)).toPrecision(3) + " " + sizes[i];
+});
 
 new Vue({
   router,

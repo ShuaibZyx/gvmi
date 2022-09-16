@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 Vue.use(Vuex);
+var sessionState = JSON.parse(window.sessionStorage.getItem("state"));
 
 export default new Vuex.Store({
   actions: {},
@@ -10,8 +11,15 @@ export default new Vuex.Store({
     SetUserInfo(state, value) {
       state.userInfo = value;
     },
+
+    //更改用户的账户余额
+    SetUserCoinCount(state, value) {
+      state.userInfo.count = value;
+    },
   },
-  state: {
-    userInfo: {},
-  },
+  state: sessionState
+    ? sessionState
+    : {
+        userInfo: {},
+      },
 });
