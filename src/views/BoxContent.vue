@@ -14,6 +14,28 @@
               <i class="el-icon-picture-outline"></i>
             </div>
           </el-image>
+
+          <el-upload
+            class="uploadBoxCover"
+            :action="baseUrl + 'boxcover'"
+            name="file"
+            :data="{
+              boxId,
+              coverId: boxInfo.coverId,
+              type: 'common',
+            }"
+            :headers="{
+              token,
+            }"
+            :accept="uploadFileTypeLimits.image"
+            :on-change="handleCoverChange"
+            :show-file-list="false"
+            :on-success="uploadBoxCoverSuccess"
+          >
+            <el-button type="primary" size="mini" round plain
+              >更换封面</el-button
+            >
+          </el-upload>
         </div>
 
         <!-- 左中 -->
@@ -37,11 +59,15 @@
           <span class="type">
             盒子类型: <el-tag size="small">{{ boxInfo.typeName }}盒子</el-tag>
           </span>
-          <span class="desc"> 描述: {{ boxInfo.description }} </span>
+          <span class="desc">
+            描述: {{ boxInfo.description || "暂无描述" }}
+          </span>
           <span class="updateTime">
             最近更新于: {{ boxInfo.updateTime | dateFormat }}
           </span>
         </div>
+
+        <el-divider direction="vertical" />
 
         <!-- 右中 -->
         <div class="middleright">
@@ -68,11 +94,12 @@
               action
               :accept="uploadFileTypeLimits.box"
               :http-request="uploadFiles"
-              :on-change="handleChange"
+              :on-change="handleFileChange"
               :on-exceed="handleExceed"
               :multiple="true"
               :auto-upload="false"
               :limit="boxRemainSize"
+              :file-list="addFileList"
               list-type="text"
               ref="upload"
             >
@@ -91,6 +118,7 @@
               type="danger"
               size="mini"
               @click="clearSelectedFiles"
+              v-if="addFileList.length > 0"
               icon="el-icon-circle-close"
               >清除</el-button
             >
@@ -101,7 +129,7 @@
               @click="upload"
               icon="el-icon-upload2"
               style="margin-right: 1em"
-              :disabled="boxRemainSize === 0"
+              :disabled="boxRemainSize === 0 || addFileList.length === 0"
               >上传</el-button
             >
           </div>
@@ -119,6 +147,26 @@
               <el-button slot="append" icon="el-icon-search" />
             </el-input>
           </div>
+
+          <el-button
+            type="primary"
+            plain
+            size="small"
+            round
+            @click="editBoxInfoVisible = true"
+            >编辑盒子信息</el-button
+          >
+
+          <span
+            >盒子状态:&nbsp;
+            <el-switch
+              v-model="boxPublicState"
+              active-text="公开"
+              inactive-color="black"
+              :disabled="boxPublicAvailable"
+              @change="setBoxPublicState"
+            />
+          </span>
 
           <div
             :class="{
@@ -364,8 +412,62 @@
         v-if="filePreview.fileType === 'word'"
         :fileId="filePreview.fileId"
         :type="filePreview.type"
+        :fileType="filePreview.type"
       />
       <pdf v-if="filePreview.fileType === 'pdf'" :src="filePreview.fileUrl" />
+    </el-dialog>
+
+    <!-- 编辑盒子信息 -->
+    <el-dialog
+      :visible.sync="editBoxInfoVisible"
+      width="28%"
+      top="20vh"
+      center
+      :close-on-click-modal="false"
+      custom-class="editBoxInfo"
+      @close="handleEditBoxInfoClosed"
+    >
+      <div slot="title">
+        <i class="el-icon-edit"></i>
+        <span> 修改盒子信息</span>
+      </div>
+      <el-form
+        :model="editBoxForm"
+        label-width="auto"
+        ref="editBoxFormRef"
+        :rules="editBoxFormRules"
+      >
+        <el-form-item prop="title">
+          <el-input
+            v-model="editBoxForm.title"
+            autocomplete="off"
+            maxlength="6"
+            minlength="1"
+            placeholder="盒子名称"
+            clearable
+            prefix-icon="el-icon-s-flag"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-input
+            type="textarea"
+            placeholder="重新描述它吧✨"
+            v-model="editBoxForm.description"
+            maxlength="50"
+            show-word-limit
+            clearable
+            rows="2"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="editBoxDialogFooter">
+        <el-button size="small" @click="editBoxInfoVisible = false"
+          >取 消</el-button
+        >
+        <el-button type="primary" size="small" @click="editBoxInfo"
+          >确 定</el-button
+        >
+      </div>
     </el-dialog>
   </el-card>
 </template>
@@ -383,6 +485,8 @@ export default {
     return {
       //当前盒子信息(包含文件)
       boxInfo: {},
+      //默认上传文件时所用的地址
+      baseUrl: "http://localhost:3006/file/",
       //自定义上传时所用的formdate
       formdata: "",
       //文件搜索条件
@@ -406,6 +510,8 @@ export default {
       filePreviewVisable: false,
       //视频播放器可见性
       videoPlayDialogVisable: false,
+      //编辑盒子信息的dialog可见性
+      editBoxInfoVisible: false,
       //盒子额外扩容的大小
       cartonExpandSize: 0,
       //图片类型的盒子预览数组
@@ -448,12 +554,40 @@ export default {
         fileUrl: "",
         type: "",
       },
+      //盒子公开状态
+      boxPublicState: false,
+      //盒子公开状态是否可切换
+      boxPublicAvailable: false,
+      //添加盒子文件绑定数组
+      addFileList: [],
+      //编辑盒子信息对象
+      editBoxForm: {
+        title: "",
+        description: "",
+      },
+      //编辑盒子信息验证规则
+      editBoxFormRules: {
+        title: [
+          { required: true, message: "请输入盒子名称", trigger: "blur" },
+          {
+            min: 1,
+            max: 6,
+            message: "长度在 1 到 6 个字符",
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   computed: {
     //当前盒子Id
     boxId() {
       return this.$route.query.boxId;
+    },
+
+    //token
+    token() {
+      return JSON.parse(window.sessionStorage.getItem("token"));
     },
 
     //不同盒子的文件上传大小限制
@@ -509,18 +643,19 @@ export default {
   methods: {
     //获取当前盒子的详情信息,包括用户信息与所包含的文件信息
     async getBoxInfo() {
-      const { data: boxInfoRes } = await this.$http.post("box/boxinfo", {
-        boxId: this.boxId,
-      });
+      const { data: boxInfoRes } = await this.$http.get(
+        "box/boxinfo/" + this.boxId
+      );
       this.boxInfo = boxInfoRes.data;
+      this.boxPublicState = boxInfoRes.data?.public === 1 ? true : false;
       this.boxInfo.files.forEach((file) => {
         this.boxFilePreviewList.push(file.fileUrl);
       });
     },
 
-    //文件/文件列表状态发生改变时触发的方法
-    handleChange(file) {
-      //文件大小，小于100M
+    //文件/文件列表状态发生改变时触发的方法(上传盒子文件)
+    handleFileChange(file) {
+      //文件大小
       const size = file.size / 1024 / 1024 < this.boxFilesSize;
       if (!size) {
         this.$message({
@@ -531,6 +666,34 @@ export default {
         this.$refs.upload.uploadFiles.pop();
         return;
       }
+      this.addFileList = this.$refs.upload.uploadFiles;
+    },
+
+    //文件/文件列表状态发生改变时触发的方法(上传盒子图片封面)
+    handleCoverChange(file) {
+      //文件大小
+      const size = file.size / 1024 / 1024 < 1;
+      if (!size) {
+        this.$message({
+          message: `文件大小不得超过1M 不符合的文件已被忽略`,
+          center: true,
+          type: "warning",
+        });
+        this.$refs.uploadBoxCover.uploadFiles.pop();
+        return;
+      }
+    },
+
+    //盒子封面修改成功触发事件
+    uploadBoxCoverSuccess(response) {
+      this.$message({
+        message: `${
+          response.code !== 200 ? "盒子封面更新失败" : "盒子封面更新成功"
+        }`,
+        type: `${response.code !== 200 ? "error" : "success"}`,
+        center: true,
+      });
+      this.getBoxInfo();
     },
 
     //选择的文件超过盒子剩余文件数时触发
@@ -570,16 +733,15 @@ export default {
       this.formdata.append("boxId", this.boxId);
       this.$refs.upload.submit();
       await this.$http
-        .post("http://localhost:3006/file/boxuploads", this.formdata)
+        .post(this.baseUrl + "boxuploads", this.formdata)
         .then(({ data }) => {
-          if (data.code == 201) {
-            this.$refs.upload.uploadFiles = [];
-            this.$message({
-              message: "上传成功!",
-              center: true,
-              type: "success",
-            });
-          }
+          this.$refs.upload.uploadFiles = [];
+          this.$message({
+            message: `${data.code !== 201 ? "文件上传失败" : "文件上传成功"}`,
+            center: true,
+            type: `${data.code !== 201 ? "error" : "success"}`,
+          });
+          this.addFileList = [];
           this.getBoxInfo();
         });
     },
@@ -587,6 +749,7 @@ export default {
     //清除已经选中的文件
     clearSelectedFiles() {
       this.$refs.upload.clearFiles();
+      this.addFileList = [];
     },
 
     //下载文件方法
@@ -782,6 +945,7 @@ export default {
       } else if (fileType === "pdf") {
         this.filePreview.fileUrl = file.fileUrl;
         this.filePreview.fileType = "pdf";
+        this.filePreview.fileName = fileName;
         this.filePreviewVisable = true;
       } else {
         this.$message({
@@ -796,6 +960,60 @@ export default {
     //文档文件预览关闭时触发
     handleFilePreviewClosed(object) {
       Object.keys(object).forEach((key) => (object[key] = ""));
+    },
+
+    //关闭编辑盒子信息dialog触发
+    handleEditBoxInfoClosed() {
+      this.$refs.editBoxFormRef.resetFields();
+      Object.keys(this.editBoxForm).forEach(
+        (key) => (this.editBoxForm[key] = "")
+      );
+    },
+
+    //设置盒子公开权限
+    async setBoxPublicState() {
+      this.boxPublicAvailable = true;
+      const { data: setBoxStateRes } = await this.$http.put("box/state", {
+        boxId: this.boxInfo.boxId,
+        public: this.boxPublicState ? 1 : 0,
+      });
+      this.$message({
+        message: `${
+          setBoxStateRes.code !== 200
+            ? "盒子公开权限设置失败"
+            : "盒子公开权限设置成功"
+        }`,
+        type: `${setBoxStateRes.code !== 200 ? "error" : "success"}`,
+        center: true,
+      });
+      setTimeout(() => {
+        this.boxPublicAvailable = false;
+      }, 3000);
+    },
+
+    //编辑盒子信息
+    editBoxInfo() {
+      this.$refs.editBoxFormRef.validate(async (valid) => {
+        if (!valid) return;
+        const { data: editBoxInfoRes } = await this.$http.put(
+          "box/newboxinfo",
+          {
+            boxId: this.boxId,
+            boxInfo: this.editBoxForm,
+          }
+        );
+        this.$message({
+          message: `${
+            editBoxInfoRes.code !== 200
+              ? "修改盒子信息失败"
+              : "修改盒子信息成功"
+          }`,
+          type: `${editBoxInfoRes.code !== 200 ? "error" : "success"}`,
+          center: true,
+        });
+        this.getBoxInfo();
+        this.editBoxInfoVisible = false;
+      });
     },
   },
   mounted() {
@@ -825,22 +1043,37 @@ export default {
     background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
     border-radius: 7px;
     overflow: hidden;
+    .el-divider--vertical {
+      height: 12em;
+      width: 2px;
+      background-color: black;
+    }
     .left {
       width: 13%;
-      height: 13em;
+      height: 14em;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
       .el-image {
         border-radius: 5px;
         padding: 1px;
         background: black;
       }
+      .uploadBoxCover {
+        margin-top: 1.5%;
+        width: 100%;
+        .el-upload {
+          width: 100% !important;
+          .el-button {
+            width: 100% !important;
+          }
+        }
+      }
     }
     .middleleft {
-      width: 25%;
-      padding: 10px;
+      width: 20%;
+      padding: 10px 0px 10px 50px;
       height: auto;
       display: flex;
       flex-direction: column;
@@ -866,8 +1099,8 @@ export default {
       margin: 5px 0;
     }
     .middleright {
-      width: 37%;
-      height: 13em;
+      width: 40%;
+      height: 14em;
       padding: 10px;
       display: flex;
       flex-direction: column;
@@ -882,6 +1115,7 @@ export default {
         align-items: flex-start;
         flex-direction: row;
         overflow-y: scroll;
+        padding: 0 2em;
         .upload {
           width: 100%;
           margin: 0 5px;
@@ -904,22 +1138,22 @@ export default {
       }
     }
     .right {
-      width: 20%;
-      height: 13em;
+      width: 22%;
+      height: 14em;
       padding: 10px 0;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-end;
       .search {
-        padding: 0 10px;
         width: 100%;
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
         align-items: center;
         .el-input {
-          width: 100%;
+          margin-top: 5px;
+          width: 85%;
         }
         .el-input__inner {
           text-align: center;
@@ -1116,5 +1350,18 @@ export default {
 .filePreview {
   border-radius: 10px;
   overflow: hidden;
+}
+
+.editBoxInfo {
+  border-radius: 10px;
+  .el-dialog__body {
+    padding-bottom: 0;
+    .el-input__inner {
+      text-align: center;
+    }
+    .el-textarea__inner {
+      text-align: center;
+    }
+  }
 }
 </style>

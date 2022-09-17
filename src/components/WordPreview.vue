@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 预览文件的地方（用于渲染） -->
-    <div v-if="fileId !== ''" ref="file" />
+    <div v-if="fileId !== '' && docxVisible" ref="file" />
     <div v-else>文件无法预览</div>
   </div>
 </template>
@@ -10,7 +10,7 @@
 let docx = require("docx-preview");
 export default {
   name: "WordPreview",
-  props: ["fileId", "type"],
+  props: ["fileId", "type", "fileType"],
   data() {
     return {
       options: {
@@ -25,24 +25,35 @@ export default {
         trimXmlDeclaration: true, //如果为真，xml声明将在解析之前从xml文档中删除
         debug: false, // 启用额外的日志记录
       },
+      docxVisible: true,
     };
   },
   methods: {
     async preview() {
-      await this.$http({
-        url: "/file/preview",
-        method: "post",
-        responseType: "blob",
-        data: {
-          fileId: this.fileId,
-          type: this.type,
-        },
-      }).then(({ data }) => {
-        docx.renderAsync(data, this.$refs.file, null, this.options); // 渲染到页面
-      });
+      try {
+        await this.$http({
+          url: "/file/preview",
+          method: "post",
+          responseType: "blob",
+          data: {
+            fileId: this.fileId,
+            type: this.type,
+          },
+        }).then(({ data }) => {
+          docx.renderAsync(data, this.$refs.file, null, this.options); // 渲染到页面
+        });
+      } catch (error) {
+        this.docxVisible = false;
+        this.this.$message({
+          message: "该文件无法预览",
+          type: "error",
+          center: true,
+        });
+      }
     },
   },
   created() {
+    this.options.className = this.fileType;
     this.preview();
   },
 };

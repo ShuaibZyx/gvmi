@@ -48,12 +48,14 @@ axios.interceptors.request.use(
 // 在response拦截器中隐藏进度条,NProgress.done()
 axios.interceptors.response.use(
   (response) => {
-    if (response.data.code == 403) {
+    if (response.data.code === 403) {
       ElementUI.Message({
         message: "当前登录已失效，请重新登录",
         center: true,
         type: "error",
       });
+      window.sessionStorage.removeItem("userId");
+      window.sessionStorage.removeItem("token");
       router.replace({ path: "/login" });
     }
     Nprogress.done();

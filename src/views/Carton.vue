@@ -55,7 +55,7 @@
       <div class="boxes" v-if="userBoxs.length > 0">
         <el-checkbox-group
           v-model="selectedBoxList"
-          @change="handleCheckAllChange"
+          @change="handleCheckedChange"
         >
           <div
             class="item"
@@ -168,13 +168,13 @@
         <div class="size__cover">
           <div class="corver">
             <el-upload
-              :file-list="fileList"
               :class="{
-                hide: fileList.length === 1,
+                hide: addBoxfileList.length === 1,
               }"
               accept=".jpeg,.png,.jpg,.bmp,.gif"
               list-type="picture-card"
               class="upload"
+              :file-list="addBoxfileList"
               action
               :http-request="uploadFile"
               :on-change="handleFileChange"
@@ -186,10 +186,10 @@
             >
               <i slot="default" class="el-icon-plus"></i>
               <div slot="file" slot-scope="{ file }">
-                <img
+                <el-image
                   class="el-upload-list__item-thumbnail"
                   :src="file.url"
-                  alt=""
+                  fit="cover"
                 />
                 <span class="el-upload-list__item-actions">
                   <span
@@ -331,12 +331,12 @@ export default {
       },
       //盒子额外扩容的大小
       cartonExpandSize: 0,
-      //回显所用文件列表
-      fileList: [],
       //预览上传的图片的dialog弹窗可见性
       previewImgDialogVisible: false,
       //预览所用的图片url
       previewImageUrl: "",
+      //创建新盒子时添加的文件数组
+      addBoxfileList: [],
       //当前用户的所有盒子
       userBoxs: [],
       //添加新盒子表单验证规则
@@ -345,7 +345,7 @@ export default {
           { required: true, message: "请输入盒子名称", trigger: "blur" },
           {
             min: 1,
-            max: 10,
+            max: 6,
             message: "长度在 1 到 6 个字符",
             trigger: "blur",
           },
@@ -420,7 +420,7 @@ export default {
     //处理已经上传的图片删除事件
     handleRemove() {
       this.$refs.upload.uploadFiles.pop();
-      this.fileList.pop();
+      this.addBoxfileList.pop();
     },
 
     //文件/文件列表状态发生改变时触发的方法
@@ -429,7 +429,7 @@ export default {
       const typeList = [".jpeg", ".jpg", ".png", ".bmp", ".gif"];
       //文件小于1M
       const size = file.size / 1024 / 1024 < 1;
-      this.fileList = this.$refs.upload.uploadFiles;
+      this.addBoxfileList = this.$refs.upload.uploadFiles;
       if (!typeList.includes(fileType)) {
         this.$message({
           message: "只可选择图片类型文件",
@@ -549,11 +549,8 @@ export default {
     //获取当前用户的所有盒子
     async getCurrentUserBoxs() {
       const userId = window.sessionStorage.getItem("userId");
-      const { data: getCurrentUserBoxsRes } = await this.$http.post(
-        "box/userboxs",
-        {
-          userId,
-        }
+      const { data: getCurrentUserBoxsRes } = await this.$http.get(
+        "box/userboxs/" + userId
       );
       if (getCurrentUserBoxsRes.code !== 200) {
         this.$message({
@@ -592,11 +589,15 @@ export default {
 
     //删除盒子
     deleteBoxs() {
-      this.$confirm("永久删除选中的盒子和其中的文件, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
+      this.$confirm(
+        "永久删除选中的盒子和其中的文件,所花费的金币将不会返还,是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
         .then(async () => {
           const { data: deleteBoxsRes } = await this.$http.post(
             "box/deleteboxs",
@@ -612,6 +613,7 @@ export default {
             type: `${deleteBoxsRes.code !== 200 ? "error" : "success"}`,
             center: true,
           });
+          this.getCurrentUserBoxs();
         })
         .catch(() => {
           this.$message({
