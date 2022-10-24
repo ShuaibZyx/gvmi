@@ -25,8 +25,10 @@
         <div class="add green" @click="createCartonVisible = true">
           创建新盒子
         </div>
+        
         <div class="search">
           <div class="top">
+            <!-- 搜索按钮 -->
             <el-input
               v-model="searchCarton"
               placeholder="盒子名称"
@@ -162,11 +164,12 @@
               <el-option label="图片" :value="1" />
               <el-option label="小文件" :value="2" />
               <el-option label="大文件" :value="3" />
+              <span slot="prefix">类型:</span>
             </el-select>
           </el-form-item>
         </div>
         <div class="size__cover">
-          <div class="corver">
+          <div class="cover">
             <el-upload
               :class="{
                 hide: addBoxfileList.length === 1,
@@ -178,13 +181,12 @@
               action
               :http-request="uploadFile"
               :on-change="handleFileChange"
-              :on-exceed="handleFileExceed"
-              :multiple="true"
               :auto-upload="false"
-              :limit="1"
               ref="upload"
             >
-              <i slot="default" class="el-icon-plus"></i>
+              <i slot="default" class="el-icon-plus" style="font-size: 0.7em"
+                >封面</i
+              >
               <div slot="file" slot-scope="{ file }">
                 <el-image
                   class="el-upload-list__item-thumbnail"
@@ -222,6 +224,7 @@
                 @click="expandCarton"
                 >扩容</el-button
               >
+              <span slot="prefix">容量:</span>
             </el-input>
             <span class="rules">
               <span>不同类型盒子兑换规则如下(文件-金币):</span>
@@ -354,6 +357,7 @@ export default {
           { required: true, message: "请选择盒子类型", trigger: "blur" },
         ],
       },
+      formdata: new FormData(),
       //搜索盒子的条件
       searchCarton: "",
       //已经选中的盒子的Id
@@ -398,9 +402,39 @@ export default {
       });
       return boxIdArr;
     },
+
+    //默认上传路径
+    baseUrl() {
+      return this.$store.state.baseUrl;
+    },
   },
 
   methods: {
+    //获取当前用户的所有盒子
+    async getCurrentUserBoxs() {
+      const userId = window.sessionStorage.getItem("userId");
+      const { data: getCurrentUserBoxsRes } = await this.$http.get(
+        "box/userboxs/" + userId
+      );
+      if (getCurrentUserBoxsRes.code !== 200) {
+        this.$message({
+          message: "获取盒子失败",
+          center: true,
+          type: "error",
+        });
+        return;
+      }
+      this.userBoxs = getCurrentUserBoxsRes.data;
+      var boxSigns = [];
+      getCurrentUserBoxsRes.data.forEach((box) => {
+        boxSigns.push({
+          boxId: box.boxId,
+          title: box.title,
+        });
+      });
+      this.$store.commit("SetUserBoxSigns", boxSigns);
+    },
+
     //处理图片预览
     handlePictureCardPreview(file) {
       this.previewImageUrl = file.url;
@@ -429,7 +463,6 @@ export default {
       const typeList = [".jpeg", ".jpg", ".png", ".bmp", ".gif"];
       //文件小于1M
       const size = file.size / 1024 / 1024 < 1;
-      this.addBoxfileList = this.$refs.upload.uploadFiles;
       if (!typeList.includes(fileType)) {
         this.$message({
           message: "只可选择图片类型文件",
@@ -448,9 +481,10 @@ export default {
         this.$refs.upload.uploadFiles.pop();
         return;
       }
+      this.addBoxfileList = this.$refs.upload.uploadFiles;
     },
 
-    //选择的文件超过规定限制(5个)时触发的方法
+    //选择的文件超过规定限制(1个)时触发的方法
     handleFileExceed() {
       this.$message({
         message: "最多选择1张图片",
@@ -475,13 +509,11 @@ export default {
         if (!valid) return;
         this.formdata = new FormData();
         this.$refs.upload.submit();
-        await this.$http
-          .post("http://localhost:3006/file/upload", this.formdata)
-          .then(({ data }) => {
-            this.newCartonFrom.coverUrl = data.file.fileUrl;
-            this.newCartonFrom.coverId = data.file.fileId;
-            this.createCarton();
-          });
+        await this.$http.post("file/upload", this.formdata).then(({ data }) => {
+          this.newCartonFrom.coverUrl = data.file.fileUrl;
+          this.newCartonFrom.coverId = data.file.fileId;
+          this.createCarton();
+        });
       });
     },
 
@@ -521,6 +553,12 @@ export default {
 
     //控制用户输入的扩容最大容量不超过
     exceedCaronExpandSize() {
+      //控制多0输入
+      if (
+        this.cartonExpandSize.toString().length > 1 &&
+        this.cartonExpandSize.toString() === "00"
+      )
+        this.cartonExpandSize = this.cartonExpandSize.toString().slice(0, 1);
       var cartonType = this.newCartonFrom.typeId;
       if (cartonType === 1 && this.cartonExpandSize > 90)
         this.cartonExpandSize = 90;
@@ -532,7 +570,10 @@ export default {
 
     //用户确定扩容点击事件
     confirmExpandCarton() {
-      if (this.cartonExpandSize === 0) {
+      if (
+        this.cartonExpandSize === 0 ||
+        this.cartonExpandSize.toString() === ""
+      ) {
         this.expandCartonVisible = false;
         return;
       }
@@ -544,23 +585,6 @@ export default {
         center: true,
         type: "success",
       });
-    },
-
-    //获取当前用户的所有盒子
-    async getCurrentUserBoxs() {
-      const userId = window.sessionStorage.getItem("userId");
-      const { data: getCurrentUserBoxsRes } = await this.$http.get(
-        "box/userboxs/" + userId
-      );
-      if (getCurrentUserBoxsRes.code !== 200) {
-        this.$message({
-          message: "获取盒子失败",
-          center: true,
-          type: "error",
-        });
-        return;
-      }
-      this.userBoxs = getCurrentUserBoxsRes.data;
     },
 
     //盒子详情页面
@@ -631,290 +655,3 @@ export default {
   },
 };
 </script>
-
-<style lang="less">
-.carton {
-  width: 100%;
-  height: auto;
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  .el-divider {
-    margin: 5px;
-  }
-  .operate {
-    width: 98%;
-    height: auto;
-    margin: 5px 0;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 10px;
-    .btns {
-      padding: 0 10px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
-      .top {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-      }
-      .bottom {
-        margin-top: 1.2em;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-      }
-    }
-    .search {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-end;
-      .bottom {
-        margin-top: 0.7em;
-        display: flex;
-        flex-direction: row-reverse;
-        justify-content: flex-start;
-        align-items: center;
-      }
-    }
-    .add {
-      width: 8em;
-      text-align: center;
-      cursor: pointer;
-      border: 0;
-      text-transform: uppercase;
-      font-size: 20px;
-      font-weight: bold;
-      padding: 15px 50px;
-      border-radius: 50px;
-      color: white;
-      outline: none;
-      position: relative;
-    }
-    .add:before {
-      content: "";
-      display: block;
-      background: linear-gradient(
-        to left,
-        rgba(255, 255, 255, 0) 50%,
-        rgba(255, 255, 255, 0.4) 50%
-      );
-      background-size: 210% 100%;
-      background-position: right bottom;
-      height: 100%;
-      width: 100%;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      left: 0;
-      border-radius: 50px;
-      transition: all 1s;
-      -webkit-transition: all 1s;
-    }
-    .green {
-      background-image: linear-gradient(to right, #25aae1, #40e495);
-      box-shadow: 0 4px 15px 0 rgba(49, 196, 190, 0.75);
-    }
-    .green:hover:before {
-      background-position: left bottom;
-    }
-  }
-  .boxes {
-    width: 100%;
-    .el-checkbox-group {
-      padding: 10px;
-      height: auto;
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      font-size: unset;
-      .item {
-        position: relative;
-        .introduce {
-          min-width: 16em;
-          min-height: 16em;
-          margin: 15px;
-          border-radius: 10px;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          align-items: center;
-          position: relative;
-          .mycheckbox {
-            position: absolute;
-            right: 0;
-            top: 7%;
-          }
-          .title {
-            padding: 20px 0;
-            font-family: 楷体;
-            font-weight: bolder;
-            font-size: 1.1em;
-          }
-          .size {
-            width: 90%;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            font-size: 0.8em;
-            font-weight: bolder;
-          }
-        }
-      }
-      .shade {
-        top: 0;
-        left: 0;
-        position: absolute;
-        border-radius: 10px;
-        overflow: hidden;
-        min-width: 16em;
-        min-height: 16em;
-        box-shadow: 1px 1px 1px gray;
-        border: 2px pink solid;
-        margin: 15px;
-        padding: 4px;
-        opacity: 0.3;
-      }
-    }
-
-    .shade:hover {
-      cursor: pointer;
-      opacity: 0.7;
-      box-shadow: 5px 5px 10px gray;
-    }
-  }
-  .page {
-    width: 100%;
-    height: auto;
-    margin: 15px 0;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
-}
-
-.newCartonDialog {
-  border-radius: 10px;
-  .title {
-    font-family: 楷体;
-    font-weight: bold;
-    font-size: 1.3em;
-  }
-  .createCartonForm {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-content: center;
-    .el-form-item {
-      margin: 0;
-    }
-    .flag {
-      padding: 5px 15px;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      margin: 10px 0;
-    }
-    .discription {
-      margin: 10px 0;
-      padding: 5px 15px;
-      .el-input__count {
-        bottom: unset;
-      }
-      .value {
-        margin-top: 15px;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        font-family: 楷体;
-        font-weight: bold;
-        font-size: 1.2em;
-      }
-    }
-    .size__cover {
-      padding: 5px 15px;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      .size {
-        width: 70%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: flex-start;
-        .rules {
-          margin: 10px 0;
-          font-family: 楷体;
-          font-weight: bold;
-          font-size: 16.5px;
-          line-height: 22px;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          justify-content: center;
-        }
-      }
-    }
-  }
-  .cartonDialogFooter {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
-}
-
-.hide .el-upload--picture-card {
-  display: none;
-}
-
-.expandCartonDialog {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  .el-dialog__body {
-    width: 90%;
-    padding: 10px;
-  }
-  .el-input__inner {
-    text-align: center;
-  }
-  .title {
-    font-family: 楷体;
-    font-weight: bold;
-    font-size: 1.3em;
-  }
-  .value {
-    margin-top: 15px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    font-family: 楷体;
-    font-weight: bold;
-    font-size: 1.2em;
-  }
-}
-</style>

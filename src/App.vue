@@ -12,8 +12,13 @@ export default {
     return {
       unloadTime: 0,
       beforeUnloadTime: 0,
-      offlineUrl: "http://localhost:3006/user/offline",
     };
+  },
+  computed: {
+    //默认上传路径
+    baseUrl() {
+      return this.$store.state.baseUrl;
+    },
   },
   methods: {
     handleUserAutoLogin() {
@@ -42,7 +47,7 @@ export default {
       if (diffTime <= 5 && token && userId) {
         var formdata = new FormData();
         formdata.append("userId", userId);
-        window.navigator.sendBeacon(this.offlineUrl, formdata);
+        window.navigator.sendBeacon(this.baseUrl + "user/offline", formdata);
       }
     });
 

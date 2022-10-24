@@ -58,10 +58,3 @@ export default {
   },
 };
 </script>
-
-<style lang="less">
-.docx-wrapper {
-  border-radius: 5px;
-  background: white !important;
-}
-</style>

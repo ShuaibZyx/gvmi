@@ -294,6 +294,7 @@ export default {
             message: "登录成功",
             center: true,
             type: "success",
+            duration: 500,
           });
           return;
         }
@@ -325,17 +326,12 @@ export default {
           //注册成功后为用户填入登陆表单数据
           this.loginForm = this.registerForm;
           this.signName = "Regist";
-          this.$message({
-            message: "注册成功 请登录",
-            type: "success",
-            center: true,
-          });
-          return;
         }
-        //注册失败
         this.$message({
-          message: registRes.msg,
-          type: "success",
+          message: `${
+            registRes.code === 200 ? "注册成功 请登录" : `${registRes.msg}`
+          }`,
+          type: `${registRes.code === 200 ? "success" : "error"}`,
           center: true,
         });
       });

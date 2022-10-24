@@ -61,16 +61,3 @@ export default {
   },
 };
 </script>
-
-<style lang="less">
-.pdfPreview {
-  width: 100%;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  span {
-    width: 100%;
-  }
-}
-</style>

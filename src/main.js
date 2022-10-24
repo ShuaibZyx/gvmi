@@ -12,6 +12,7 @@ import VueCookies from "vue-cookies";
 import { v4 as uuid } from "uuid";
 import methods from "./assets/js/methods";
 import VideoPlayer from "vue-video-player";
+import ElementUI from "element-ui";
 
 require("video.js/dist/video-js.css");
 require("vue-video-player/src/custom-theme.css");
@@ -24,8 +25,9 @@ Vue.mixin(methods);
 Vue.config.productionTip = false;
 //绑定axios到原型对象实例属性http上
 Vue.prototype.$http = axios;
-//设置axios的默认地址
+//设置axios的默认地址和最长请求时间
 axios.defaults.baseURL = "/api";
+axios.defaults.timeout = 10000;
 //绑定moment到原型对象实例属性moment上
 Vue.prototype.$moment = moment;
 //绑定uuid到原型对象实例属性uuid上
@@ -38,6 +40,10 @@ axios.interceptors.request.use(
     // 判断是否存在token，如果存在的话，则每个http header都加上token
     if (token) config.headers.token = token; //请求头加上token
     Nprogress.start();
+    ElementUI.Loading.service({
+      text: "努力加载中🥶...",
+      background: "rgba(0, 0, 0, 0)",
+    });
     return config;
   },
   (error) => {
@@ -59,6 +65,10 @@ axios.interceptors.response.use(
       router.replace({ path: "/login" });
     }
     Nprogress.done();
+    Vue.nextTick(() => {
+      // 以服务的方式调用的 Loading 需要异步关闭
+      ElementUI.Loading.service().close();
+    });
     return response;
   },
   (error) => {
@@ -78,6 +88,12 @@ Vue.filter("bytesToSize", function (bytes) {
     sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"],
     i = Math.floor(Math.log(bytes) / Math.log(k));
   return (bytes / Math.pow(k, i)).toPrecision(3) + " " + sizes[i];
+});
+
+//全局过滤器---数量单位转换
+Vue.filter("numberFormat", function (number) {
+  if (number > 100000) number = parseInt(number / 10000) + "万";
+  return number;
 });
 
 new Vue({

@@ -5,9 +5,11 @@ Vue.use(VueRouter);
 const Layout = () => import("../components/Layout.vue");
 const Login = () => import("../components/Login.vue");
 const Home = () => import("../views/Home.vue");
-const Forum = () => import("../views/Forum.vue");
-const Carton = () => import("../views/Carton.vue");
-const BoxContent = () => import("../views/BoxContent.vue");
+const Forum = () => import("../views/forum/Forum.vue");
+const Carton = () => import("../views/carton/Carton.vue");
+const BoxContent = () => import("../views/carton/BoxContent.vue");
+const AddForum = () => import("../views/forum/AddForum.vue");
+const ForumDetail = () => import("../views/forum/ForumDetail.vue");
 const Test = () => import("../components/Test.vue");
 
 const originalPush = VueRouter.prototype.push;
@@ -44,6 +46,14 @@ const router = new VueRouter({
         {
           path: "/test",
           component: Test,
+        },
+        {
+          path: "/addforum",
+          component: AddForum,
+        },
+        {
+          path: "/forumdetail",
+          component: ForumDetail,
         },
       ],
     },

@@ -420,3 +420,769 @@ body,
 }
 
 /* 网站主页结束 */
+
+/* 页脚开始 */
+
+.footer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 5px;
+  overflow: hidden;
+  background-color: dimgray;
+  .links {
+    width: 50%;
+    height: 100%;
+    background-color: dimgray;
+    display: flex;
+  }
+  .declare {
+    width: 50%;
+    height: 100%;
+    background-color: dimgray;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .el-divider--vertical {
+    width: 2px;
+    height: 7em;
+  }
+}
+
+/* 页脚结束 */
+
+/* 文档预览开始 */
+
+.pdfPreview {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  span {
+    width: 100%;
+  }
+}
+
+.docx-wrapper {
+  border-radius: 5px;
+  background: white !important;
+}
+
+/* 文档预览结束 */
+
+/* 盒子详情页面开始 */
+
+.boxContent {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .cartonInfo {
+    width: 96%;
+    padding: 10px;
+    margin-top: 10px;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border: solid 1px#e3e5e8;
+    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+    border-radius: 7px;
+    overflow: hidden;
+    .el-divider--vertical {
+      height: 12em;
+      width: 2px;
+      background-color: black;
+    }
+    .left {
+      width: 13%;
+      height: 14em;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      .el-image {
+        border-radius: 5px;
+        padding: 1px;
+        background: black;
+      }
+      .uploadBoxCover {
+        margin-top: 1.5%;
+        width: 100%;
+        .el-upload {
+          width: 100% !important;
+          .el-button {
+            width: 100% !important;
+          }
+        }
+      }
+    }
+    .middleleft {
+      width: 20%;
+      padding: 10px 0px 10px 50px;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      font-family: 楷体;
+      font-weight: bold;
+      .title {
+        font-size: 1.5em;
+      }
+      .birth {
+        display: inline-block;
+        .nickname {
+          font-size: 1.2em;
+        }
+        .createTime {
+          font-size: 0.7em;
+          vertical-align: text-bottom;
+        }
+      }
+    }
+    .middleleft > * {
+      margin: 5px 0;
+    }
+    .middleright {
+      width: 40%;
+      height: 14em;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      font-family: 楷体;
+      font-weight: bold;
+      .uploadFile {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        flex-direction: row;
+        overflow-y: scroll;
+        padding: 0 2em;
+        .upload {
+          width: 100%;
+          margin: 0 5px;
+          .el-upload-list {
+            width: 100%;
+          }
+        }
+      }
+      .uploadTip {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        margin: 5px;
+        font-family: 楷体;
+        font-size: 0.9em;
+        color: rgb(76, 76, 76);
+        font-weight: bold;
+      }
+    }
+    .right {
+      width: 22%;
+      height: 14em;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+      .search {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        .el-input {
+          margin-top: 5px;
+          width: 85%;
+        }
+        .el-input__inner {
+          text-align: center;
+        }
+      }
+      .capacity {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        font-family: 楷体;
+        font-weight: bold;
+      }
+      .capacityRed {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        font-family: 楷体;
+        font-weight: bold;
+        color: red;
+      }
+    }
+  }
+  .filesOperate {
+    width: 97%;
+    height: auto;
+    padding: 10px 10px 0 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    .left {
+      width: 25%;
+    }
+    .middle {
+      width: 50%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+    .right {
+      display: flex;
+      justify-content: flex-end;
+      width: 25%;
+    }
+  }
+  .files {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .el-checkbox-group {
+      padding: 10px;
+      width: 100%;
+      height: auto;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      font-size: unset;
+      .file {
+        width: 11em;
+        height: 13.6em;
+        border: solid 1px#e3e5e8;
+        border-radius: 2px;
+        margin: 1%;
+        padding: 3px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .seclectbtn {
+          width: 100%;
+          height: 10%;
+          margin-bottom: 1%;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .icon {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 70%;
+          height: 63%;
+          .el-image {
+            border-radius: 3px;
+            overflow: hidden;
+          }
+        }
+        .filename {
+          width: 100%;
+          text-align: center;
+          height: 8%;
+          margin-bottom: 2px;
+          font-family: 楷体;
+          font-weight: bolder;
+          font-size: 0.9em;
+          word-break: break-all;
+        }
+        .fileinfo {
+          width: 90%;
+          padding: 10px;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          height: 7%;
+          font-size: small;
+        }
+      }
+      .file:hover {
+        background: #dffeff;
+        cursor: pointer;
+        box-shadow: 1px 1px 1px skyblue;
+        transform: translateY(-1.5%);
+      }
+    }
+  }
+}
+
+.expandDialogFromBoxInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  .el-dialog__body {
+    width: 90%;
+    padding: 10px;
+  }
+  .el-input__inner {
+    text-align: center;
+  }
+  .title {
+    font-family: 楷体;
+    font-weight: bold;
+    font-size: 1.3em;
+  }
+  .value {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-family: 楷体;
+    font-weight: bold;
+    font-size: 1.2em;
+  }
+}
+
+.videoPlayDialog {
+  border-radius: 10px;
+  overflow: hidden;
+  .myvideo {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    box-shadow: 5px 5px 8px #888888;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+}
+
+.myaudiocontrol {
+  width: auto;
+  height: auto;
+  padding: 0 5px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  overflow: hidden;
+  .audioClose {
+    font-size: 1.4em;
+    cursor: pointer;
+    margin: 0 5px;
+    font-weight: bolder;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+}
+
+.filePreview {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.editBoxInfo {
+  border-radius: 10px;
+  .el-dialog__body {
+    padding-bottom: 0;
+    .el-input__inner {
+      text-align: center;
+    }
+    .el-textarea__inner {
+      text-align: center;
+    }
+  }
+}
+
+/* 盒子详情页面结束 */
+
+/* 用户盒子页面开始 */
+
+.carton {
+  width: 100%;
+  height: auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .el-divider {
+    margin: 5px;
+  }
+  .operate {
+    width: 98%;
+    height: auto;
+    margin: 5px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    .btns {
+      width: 40%;
+      padding: 0 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+      .top {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+      }
+      .bottom {
+        margin-top: 1.2em;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+      }
+    }
+    .search {
+      width: 40%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      .bottom {
+        margin-top: 0.7em;
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-start;
+        align-items: center;
+      }
+    }
+    .add {
+      width: 8em;
+      text-align: center;
+      cursor: pointer;
+      border: 0;
+      text-transform: uppercase;
+      font-size: 20px;
+      font-weight: bold;
+      padding: 15px 50px;
+      border-radius: 50px;
+      color: white;
+      outline: none;
+      position: relative;
+    }
+    .add:before {
+      content: "";
+      display: block;
+      background: linear-gradient(
+        to left,
+        rgba(255, 255, 255, 0) 50%,
+        rgba(255, 255, 255, 0.4) 50%
+      );
+      background-size: 210% 100%;
+      background-position: right bottom;
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      border-radius: 50px;
+      transition: all 1s;
+      -webkit-transition: all 1s;
+    }
+    .green {
+      background-image: linear-gradient(to right, #25aae1, #40e495);
+      box-shadow: 0 4px 15px 0 rgba(49, 196, 190, 0.75);
+    }
+    .green:hover:before {
+      background-position: left bottom;
+    }
+  }
+  .boxes {
+    width: 100%;
+    .el-checkbox-group {
+      padding: 10px;
+      height: auto;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      font-size: unset;
+      .item {
+        position: relative;
+        .introduce {
+          min-width: 16em;
+          min-height: 16em;
+          margin: 15px;
+          border-radius: 10px;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+          position: relative;
+          .mycheckbox {
+            position: absolute;
+            right: 0;
+            top: 7%;
+          }
+          .title {
+            padding: 20px 0;
+            font-family: 楷体;
+            font-weight: bolder;
+            font-size: 1.1em;
+          }
+          .size {
+            width: 90%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            font-size: 0.8em;
+            font-weight: bolder;
+          }
+        }
+      }
+      .shade {
+        top: 0;
+        left: 0;
+        position: absolute;
+        border-radius: 10px;
+        overflow: hidden;
+        min-width: 16em;
+        min-height: 16em;
+        box-shadow: 1px 1px 1px gray;
+        border: 2px pink solid;
+        margin: 15px;
+        padding: 4px;
+        opacity: 0.3;
+      }
+    }
+
+    .shade:hover {
+      cursor: pointer;
+      opacity: 0.7;
+      box-shadow: 5px 5px 10px gray;
+    }
+  }
+  .page {
+    width: 100%;
+    height: auto;
+    margin: 15px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.newCartonDialog {
+  border-radius: 10px;
+  .title {
+    font-family: 楷体;
+    font-weight: bold;
+    font-size: 1.3em;
+  }
+  .createCartonForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    .el-form-item {
+      margin: 0;
+    }
+    .flag {
+      padding: 5px 15px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 0;
+      .el-input__inner {
+        text-align: center;
+      }
+    }
+    .discription {
+      margin: 10px 0;
+      padding: 5px 15px;
+      .el-input__count {
+        bottom: unset;
+      }
+      .value {
+        margin-top: 15px;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        font-family: 楷体;
+        font-weight: bold;
+        font-size: 1.2em;
+      }
+    }
+    .size__cover {
+      padding: 5px 15px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      .size {
+        width: 70%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+        .rules {
+          margin: 10px 0;
+          font-family: 楷体;
+          font-weight: bold;
+          font-size: 16.5px;
+          line-height: 22px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: center;
+        }
+        .el-input__inner {
+          text-align: center;
+        }
+        .el-input__prefix {
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+  }
+  .cartonDialogFooter {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.hide .el-upload--picture-card {
+  display: none;
+}
+
+.el-select .el-input .el-select__caret {
+  transform: none;
+}
+
+.expandCartonDialog {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  .el-dialog__body {
+    width: 90%;
+    padding: 10px;
+  }
+  .el-input__inner {
+    text-align: center;
+  }
+  .title {
+    font-family: 楷体;
+    font-weight: bold;
+    font-size: 1.3em;
+  }
+  .value {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-family: 楷体;
+    font-weight: bold;
+    font-size: 1.2em;
+  }
+}
+
+/* 用户盒子页面结束 */
+
+/* 论坛主页开始 */
+
+
+/* 论坛主页结束 */
+
+/* 网站主页开始 */
+
+.home {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  .features {
+    width: 96%;
+    height: auto;
+    margin: 1% 2%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    .item {
+      width: 46%;
+      margin: 1% 2%;
+      height: 10em;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      opacity: 0.9;
+    }
+  }
+  .products {
+    width: 96%;
+    height: auto;
+    margin: 1% 2%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    .item {
+      width: 18%;
+      margin: 1% 1%;
+      height: 10em;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      background-color: antiquewhite;
+      opacity: 0.9;
+    }
+  }
+  .el-carousel {
+    width: 100%;
+  }
+}
+
+/* 网站主页结束 */

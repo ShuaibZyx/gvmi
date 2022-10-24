@@ -17,7 +17,7 @@
 
           <el-upload
             class="uploadBoxCover"
-            :action="baseUrl + 'boxcover'"
+            :action="baseUrl + 'file/boxcover'"
             name="file"
             :data="{
               boxId,
@@ -289,7 +289,7 @@
                 v-else
                 style="width: 100%; height: 100%"
                 :src="
-                  require('../assets/fileicons/' +
+                  require('../../assets/fileicons/' +
                     `${file.originalfilename.substring(
                       file.originalfilename.lastIndexOf('.') + 1
                     )}` +
@@ -473,8 +473,8 @@
 </template>
 
 <script>
-import docx from "../components/WordPreview.vue";
-import pdf from "../components/PdfPreview.vue";
+import docx from "../../components/WordPreview.vue";
+import pdf from "../../components/PdfPreview.vue";
 export default {
   name: "BoxContent",
   components: {
@@ -485,17 +485,10 @@ export default {
     return {
       //当前盒子信息(包含文件)
       boxInfo: {},
-      //默认上传文件时所用的地址
-      baseUrl: "http://localhost:3006/file/",
       //自定义上传时所用的formdate
       formdata: "",
       //文件搜索条件
       searchFile: "",
-      //可上传的文件类型
-      uploadFileTypeLimits: {
-        box: ".c, .cpp, .cs, .css, .excel, .exe, .html, .java, .jif, .jpeg, .jpg, .png, .js, .md, .mp3, .mp4, .php, .png, .ppt , .pptx, .ps, .ps1, .py, .rar, .sql, .txt, .vue, .webp, .xml, .zip, .pdf, .doc, .docx, .xls, .xlsx",
-        image: " .jif, .jpeg, .jpg, .webp, .png",
-      },
       //当前选中的文件Id列表
       selectedFileList: [],
       //是否全选文件
@@ -639,6 +632,16 @@ export default {
         (cartonType === 1 ? 10 : cartonType === 2 ? 20 : 100)
       );
     },
+
+    //可上传的文件类型
+    uploadFileTypeLimits() {
+      return this.$store.state.uploadFileTypeLimits;
+    },
+
+    //默认上传路径
+    baseUrl(){
+      return this.$store.state.baseUrl;
+    }
   },
   methods: {
     //获取当前盒子的详情信息,包括用户信息与所包含的文件信息
@@ -657,6 +660,31 @@ export default {
     handleFileChange(file) {
       //文件大小
       const size = file.size / 1024 / 1024 < this.boxFilesSize;
+      //文件类型
+      const fileType = file.name.substring(file.name.lastIndexOf("."));
+      if (this.boxInfo.typeId === 1) {
+        const typeList = this.uploadFileTypeLimits.image;
+        if (!typeList.includes(fileType)) {
+          this.$message({
+            message: "图片类型盒子只可上传图片类型文件",
+            center: true,
+            type: "warning",
+          });
+          this.$refs.upload.uploadFiles.pop();
+          return;
+        }
+      } else {
+        const typeList = this.uploadFileTypeLimits.box;
+        if (!typeList.includes(fileType)) {
+          this.$message({
+            message: "暂不支持该类型文件上传",
+            center: true,
+            type: "warning",
+          });
+          this.$refs.upload.uploadFiles.pop();
+          return;
+        }
+      }
       if (!size) {
         this.$message({
           message: `单个文件不得超过${this.boxFilesSize}M 不符合的文件已被忽略`,
@@ -673,6 +701,18 @@ export default {
     handleCoverChange(file) {
       //文件大小
       const size = file.size / 1024 / 1024 < 1;
+      //文件类型
+      const fileType = file.name.substring(file.name.lastIndexOf("."));
+      const typeList = this.uploadFileTypeLimits.image;
+      if (!typeList.includes(fileType)) {
+        this.$message({
+          message: "只可选择图片类型文件",
+          center: true,
+          type: "warning",
+        });
+        this.$refs.upload.uploadFiles.pop();
+        return;
+      }
       if (!size) {
         this.$message({
           message: `文件大小不得超过1M 不符合的文件已被忽略`,
@@ -733,7 +773,7 @@ export default {
       this.formdata.append("boxId", this.boxId);
       this.$refs.upload.submit();
       await this.$http
-        .post(this.baseUrl + "boxuploads", this.formdata)
+        .post("file/boxuploads", this.formdata)
         .then(({ data }) => {
           this.$refs.upload.uploadFiles = [];
           this.$message({
@@ -850,7 +890,7 @@ export default {
         // 创建一个a标签
         var a = document.createElement("a");
         a.href = url;
-        a.download = response.headers.filename; // 这里指定下载文件的文件名
+        a.download = `${this.$moment().format("HHmmss")}.zip`; // 这里指定下载文件的文件名
         a.click();
         // 释放之前创建的URL对象
         window.URL.revokeObjectURL(url);
@@ -893,7 +933,10 @@ export default {
 
     //用户确定扩容点击事件
     async confirmExpandCarton() {
-      if (this.cartonExpandSize === 0) {
+      if (
+        this.cartonExpandSize === 0 ||
+        this.cartonExpandSize.toString() === ""
+      ) {
         this.expandCartonVisible = false;
         return;
       }
@@ -1021,347 +1064,3 @@ export default {
   },
 };
 </script>
-
-<style lang="less">
-.boxContent {
-  width: 100%;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  .cartonInfo {
-    width: 96%;
-    padding: 10px;
-    margin-top: 10px;
-    height: auto;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    border: solid 1px#e3e5e8;
-    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
-    border-radius: 7px;
-    overflow: hidden;
-    .el-divider--vertical {
-      height: 12em;
-      width: 2px;
-      background-color: black;
-    }
-    .left {
-      width: 13%;
-      height: 14em;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      .el-image {
-        border-radius: 5px;
-        padding: 1px;
-        background: black;
-      }
-      .uploadBoxCover {
-        margin-top: 1.5%;
-        width: 100%;
-        .el-upload {
-          width: 100% !important;
-          .el-button {
-            width: 100% !important;
-          }
-        }
-      }
-    }
-    .middleleft {
-      width: 20%;
-      padding: 10px 0px 10px 50px;
-      height: auto;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: flex-start;
-      font-family: 楷体;
-      font-weight: bold;
-      .title {
-        font-size: 1.5em;
-      }
-      .birth {
-        display: inline-block;
-        .nickname {
-          font-size: 1.2em;
-        }
-        .createTime {
-          font-size: 0.7em;
-          vertical-align: text-bottom;
-        }
-      }
-    }
-    .middleleft > * {
-      margin: 5px 0;
-    }
-    .middleright {
-      width: 40%;
-      height: 14em;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      font-family: 楷体;
-      font-weight: bold;
-      .uploadFile {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        flex-direction: row;
-        overflow-y: scroll;
-        padding: 0 2em;
-        .upload {
-          width: 100%;
-          margin: 0 5px;
-          .el-upload-list {
-            width: 100%;
-          }
-        }
-      }
-      .uploadTip {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        margin: 5px;
-        font-family: 楷体;
-        font-size: 0.9em;
-        color: rgb(76, 76, 76);
-        font-weight: bold;
-      }
-    }
-    .right {
-      width: 22%;
-      height: 14em;
-      padding: 10px 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: flex-end;
-      .search {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        align-items: center;
-        .el-input {
-          margin-top: 5px;
-          width: 85%;
-        }
-        .el-input__inner {
-          text-align: center;
-        }
-      }
-      .capacity {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        align-items: center;
-        font-family: 楷体;
-        font-weight: bold;
-      }
-      .capacityRed {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        align-items: center;
-        font-family: 楷体;
-        font-weight: bold;
-        color: red;
-      }
-    }
-  }
-  .filesOperate {
-    width: 97%;
-    height: auto;
-    padding: 10px 10px 0 10px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    .left {
-      width: 25%;
-    }
-    .middle {
-      width: 50%;
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-    }
-    .right {
-      display: flex;
-      justify-content: flex-end;
-      width: 25%;
-    }
-  }
-  .files {
-    width: 100%;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    .el-checkbox-group {
-      padding: 10px;
-      width: 100%;
-      height: auto;
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      font-size: unset;
-      .file {
-        width: 11em;
-        height: 13.6em;
-        border: solid 1px#e3e5e8;
-        border-radius: 2px;
-        margin: 1%;
-        padding: 3px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        .seclectbtn {
-          width: 100%;
-          height: 10%;
-          margin-bottom: 1%;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          align-items: center;
-        }
-        .icon {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          width: 70%;
-          height: 63%;
-          .el-image {
-            border-radius: 3px;
-            overflow: hidden;
-          }
-        }
-        .filename {
-          width: 100%;
-          text-align: center;
-          height: 8%;
-          margin-bottom: 2px;
-          font-family: 楷体;
-          font-weight: bolder;
-          font-size: 0.9em;
-          word-break: break-all;
-        }
-        .fileinfo {
-          width: 90%;
-          padding: 10px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          height: 7%;
-          font-size: small;
-        }
-      }
-      .file:hover {
-        background: #dffeff;
-        cursor: pointer;
-        box-shadow: 1px 1px 1px skyblue;
-        transform: translateY(-1.5%);
-      }
-    }
-  }
-}
-
-.expandDialogFromBoxInfo {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  .el-dialog__body {
-    width: 90%;
-    padding: 10px;
-  }
-  .el-input__inner {
-    text-align: center;
-  }
-  .title {
-    font-family: 楷体;
-    font-weight: bold;
-    font-size: 1.3em;
-  }
-  .value {
-    margin-top: 15px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    font-family: 楷体;
-    font-weight: bold;
-    font-size: 1.2em;
-  }
-}
-
-.videoPlayDialog {
-  border-radius: 10px;
-  overflow: hidden;
-  .myvideo {
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
-    box-shadow: 5px 5px 8px #888888;
-    border-radius: 5px;
-    overflow: hidden;
-  }
-}
-
-.myaudiocontrol {
-  width: auto;
-  height: auto;
-  padding: 0 5px;
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  overflow: hidden;
-  .audioClose {
-    font-size: 1.4em;
-    cursor: pointer;
-    margin: 0 5px;
-    font-weight: bolder;
-    border-radius: 5px;
-    overflow: hidden;
-  }
-}
-
-.filePreview {
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.editBoxInfo {
-  border-radius: 10px;
-  .el-dialog__body {
-    padding-bottom: 0;
-    .el-input__inner {
-      text-align: center;
-    }
-    .el-textarea__inner {
-      text-align: center;
-    }
-  }
-}
-</style>
